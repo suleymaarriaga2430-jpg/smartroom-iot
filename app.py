@@ -6,8 +6,10 @@ import numpy as np
 # FIREBASE
 import firebase_admin
 from firebase_admin import credentials, firestore
+
 from datetime import datetime
 import os
+import json
 
 app = Flask(__name__)
 
@@ -15,10 +17,13 @@ app = Flask(__name__)
 # FIREBASE
 # --------------------------------
 
+firebase_key = os.environ.get("FIREBASE_KEY")
+
+cred_dict = json.loads(firebase_key)
+
+cred = credentials.Certificate(cred_dict)
+
 if not firebase_admin._apps:
-
-    cred = credentials.Certificate("firebase-key.json")
-
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -77,10 +82,6 @@ def home():
 
 def datos():
 
-    # --------------------------------
-    # DATOS IOT
-    # --------------------------------
-
     temperatura = round(random.uniform(18, 40), 1)
 
     luz = random.randint(0, 1023)
@@ -91,9 +92,7 @@ def datos():
         "Ausente"
     ])
 
-    # --------------------------------
     # IA DIFUSA
-    # --------------------------------
 
     baja = temp_baja(temperatura)
 
@@ -113,9 +112,7 @@ def datos():
     else:
         ventilador = "Lento"
 
-    # --------------------------------
     # ILUMINACIÓN
-    # --------------------------------
 
     if luz < 300:
         iluminacion = "Alta"
@@ -126,9 +123,7 @@ def datos():
     else:
         iluminacion = "Apagada"
 
-    # --------------------------------
     # MACHINE LEARNING
-    # --------------------------------
 
     X = np.array([[1], [2], [3], [4], [5]])
 
@@ -142,37 +137,25 @@ def datos():
 
     prediccion = round(prediccion[0], 1)
 
-    # --------------------------------
-    # GUARDAR EN FIREBASE
-    # --------------------------------
+    # FIREBASE
 
-    try:
+    db.collection("lecturas").add({
 
-        db.collection("lecturas").add({
+        "temperatura": temperatura,
 
-            "temperatura": temperatura,
+        "prediccion": prediccion,
 
-            "prediccion": prediccion,
+        "luz": luz,
 
-            "luz": luz,
+        "ocupacion": ocupacion,
 
-            "ocupacion": ocupacion,
+        "ventilador": ventilador,
 
-            "ventilador": ventilador,
+        "iluminacion": iluminacion,
 
-            "iluminacion": iluminacion,
+        "timestamp": datetime.now()
 
-            "timestamp": datetime.now()
-
-        })
-
-    except Exception as e:
-
-        print("Error Firebase:", e)
-
-    # --------------------------------
-    # RESPUESTA API
-    # --------------------------------
+    })
 
     return jsonify({
 
