@@ -1,86 +1,39 @@
-const temperatura = document.getElementById("temperatura");
+async function cargarDatos() {
 
-const luz = document.getElementById("luz");
+    try {
 
-const ocupacion = document.getElementById("ocupacion");
+        const respuesta = await fetch('/datos');
 
-const ventilador = document.getElementById("ventilador");
+        const datos = await respuesta.json();
 
-const iluminacion = document.getElementById("iluminacion");
+        document.getElementById('temperatura').innerHTML =
+            datos.temperatura + " °C";
 
-const prediccion = document.getElementById("prediccion");
+        document.getElementById('luz').innerHTML =
+            datos.luz;
 
-const alerta = document.getElementById("alerta");
+        document.getElementById('ocupacion').innerHTML =
+            datos.ocupacion;
 
-const ctx = document.getElementById('grafica');
+        document.getElementById('ventilador').innerHTML =
+            datos.ventilador;
 
-let temperaturas = [];
+        document.getElementById('iluminacion').innerHTML =
+            datos.iluminacion;
 
-let labels = [];
+        document.getElementById('prediccion').innerHTML =
+            datos.prediccion + " °C";
 
-const grafica = new Chart(ctx, {
+        console.log(datos);
 
-    type: 'line',
+    } catch(error) {
 
-    data: {
-
-        labels: labels,
-
-        datasets: [{
-
-            label: 'Temperatura',
-
-            data: temperaturas,
-
-            borderWidth: 3
-
-        }]
+        console.log("Error:", error);
 
     }
 
-});
-
-async function obtenerDatos(){
-
-    const respuesta = await fetch("http://127.0.0.1:5000/datos");
-
-    const datos = await respuesta.json();
-
-    temperatura.innerHTML = datos.temperatura + " °C";
-
-    luz.innerHTML = datos.luz;
-
-    ocupacion.innerHTML = datos.ocupacion;
-
-    ventilador.innerHTML = datos.ventilador;
-
-    iluminacion.innerHTML = datos.iluminacion;
-
-    prediccion.innerHTML = datos.prediccion + " °C";
-
-    if(datos.temperatura > 32){
-
-        alerta.style.display = "block";
-
-    }else{
-
-        alerta.style.display = "none";
-    }
-
-    temperaturas.push(datos.temperatura);
-
-    labels.push("");
-
-    if(temperaturas.length > 10){
-
-        temperaturas.shift();
-
-        labels.shift();
-    }
-
-    grafica.update();
 }
 
-setInterval(obtenerDatos,2000);
+cargarDatos();
 
-obtenerDatos();
+setInterval(cargarDatos, 5000);
