@@ -7,6 +7,7 @@ import numpy as np
 import firebase_admin
 from firebase_admin import credentials, firestore
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
@@ -14,9 +15,11 @@ app = Flask(__name__)
 # FIREBASE
 # --------------------------------
 
-cred = credentials.Certificate("firebase-key.json")
+if not firebase_admin._apps:
 
-firebase_admin.initialize_app(cred)
+    cred = credentials.Certificate("firebase-key.json")
+
+    firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
@@ -56,11 +59,19 @@ def temp_alta(t):
 
     return 1
 
+# --------------------------------
+# HOME
+# --------------------------------
+
 @app.route('/')
 
 def home():
 
     return render_template('index.html')
+
+# --------------------------------
+# API DATOS
+# --------------------------------
 
 @app.route('/datos')
 
@@ -70,9 +81,9 @@ def datos():
     # DATOS IOT
     # --------------------------------
 
-    temperatura = round(random.uniform(18,40),1)
+    temperatura = round(random.uniform(18, 40), 1)
 
-    luz = random.randint(0,1023)
+    luz = random.randint(0, 1023)
 
     ocupacion = random.choice([
         "Ocupado",
@@ -119,39 +130,45 @@ def datos():
     # MACHINE LEARNING
     # --------------------------------
 
-    X = np.array([[1],[2],[3],[4],[5]])
+    X = np.array([[1], [2], [3], [4], [5]])
 
-    y = np.array([20,22,24,26,28])
+    y = np.array([20, 22, 24, 26, 28])
 
     modelo = LinearRegression()
 
-    modelo.fit(X,y)
+    modelo.fit(X, y)
 
     prediccion = modelo.predict([[6]])
 
-    prediccion = round(prediccion[0],1)
+    prediccion = round(prediccion[0], 1)
 
     # --------------------------------
     # GUARDAR EN FIREBASE
     # --------------------------------
 
-    db.collection("lecturas").add({
+    try:
 
-        "temperatura": temperatura,
+        db.collection("lecturas").add({
 
-        "prediccion": prediccion,
+            "temperatura": temperatura,
 
-        "luz": luz,
+            "prediccion": prediccion,
 
-        "ocupacion": ocupacion,
+            "luz": luz,
 
-        "ventilador": ventilador,
+            "ocupacion": ocupacion,
 
-        "iluminacion": iluminacion,
+            "ventilador": ventilador,
 
-        "timestamp": datetime.now()
+            "iluminacion": iluminacion,
 
-    })
+            "timestamp": datetime.now()
+
+        })
+
+    except Exception as e:
+
+        print("Error Firebase:", e)
 
     # --------------------------------
     # RESPUESTA API
@@ -171,14 +188,20 @@ def datos():
 
         "iluminacion": iluminacion,
 
-        "baja": round(baja,2),
+        "baja": round(baja, 2),
 
-        "media": round(media,2),
+        "media": round(media, 2),
 
-        "alta": round(alta,2)
+        "alta": round(alta, 2)
 
     })
 
+# --------------------------------
+# MAIN
+# --------------------------------
 
 if __name__ == '__main__':
-    app.run(debug=True)
+
+    port = int(os.environ.get("PORT", 5000))
+
+    app.run(host='0.0.0.0', port=port)
