@@ -1,34 +1,39 @@
+const temperatura = document.getElementById("temperatura");
+const luz = document.getElementById("luz");
+const ocupacion = document.getElementById("ocupacion");
+const ventilador = document.getElementById("ventilador");
+const iluminacion = document.getElementById("iluminacion");
+const prediccion = document.getElementById("prediccion");
+
 async function cargarDatos() {
 
     try {
 
-        const respuesta = await fetch('/datos');
+        const response = await fetch("/datos");
 
-        const datos = await respuesta.json();
+        if (!response.ok) {
+            throw new Error("No se pudieron obtener los datos");
+        }
 
-        document.getElementById('temperatura').innerHTML =
-            datos.temperatura + " °C";
+        const data = await response.json();
 
-        document.getElementById('luz').innerHTML =
-            datos.luz;
+        console.log("Datos recibidos:", data);
 
-        document.getElementById('ocupacion').innerHTML =
-            datos.ocupacion;
+        temperatura.textContent = data.temperatura + " °C";
 
-        document.getElementById('ventilador').innerHTML =
-            datos.ventilador;
+        luz.textContent = data.luz;
 
-        document.getElementById('iluminacion').innerHTML =
-            datos.iluminacion;
+        ocupacion.textContent = data.ocupacion;
 
-        document.getElementById('prediccion').innerHTML =
-            datos.prediccion + " °C";
+        ventilador.textContent = data.ventilador;
 
-        console.log(datos);
+        iluminacion.textContent = data.iluminacion;
 
-    } catch(error) {
+        prediccion.textContent = data.prediccion + " °C";
 
-        console.log("Error:", error);
+    } catch (error) {
+
+        console.error("Error:", error);
 
     }
 
@@ -36,4 +41,4 @@ async function cargarDatos() {
 
 cargarDatos();
 
-setInterval(cargarDatos, 5000);
+setInterval(cargarDatos, 3000);
