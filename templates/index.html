@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartRoom IoT</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1>🏠 SmartRoom IoT Dashboard</h1>
+
+        <p>Sistema Inteligente con IA Difusa + Machine Learning</p>
+
+    </header>
+
+    <div class="alerta" id="alerta">
+
+        ⚠️ Temperatura alta detectada
+
+    </div>
+
+    <div class="contenedor">
+
+        <div class="card">
+            <h2>🌡️ Temperatura</h2>
+            <p id="temperatura">0 °C</p>
+        </div>
+
+        <div class="card">
+            <h2>💡 Luz</h2>
+            <p id="luz">0</p>
+        </div>
+
+        <div class="card">
+            <h2>👤 Ocupación</h2>
+            <p id="ocupacion">---</p>
+        </div>
+
+        <div class="card">
+            <h2>🌀 Ventilador</h2>
+            <p id="ventilador">---</p>
+        </div>
+
+        <div class="card">
+            <h2>💡 Iluminación</h2>
+            <p id="iluminacion">---</p>
+        </div>
+
+        <div class="card">
+            <h2>🤖 Predicción IA</h2>
+            <p id="prediccion">0 °C</p>
+        </div>
+
+    </div>
+
+    <div style="width:90%;margin:auto;margin-top:40px;">
+
+        <canvas id="grafica"></canvas>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
